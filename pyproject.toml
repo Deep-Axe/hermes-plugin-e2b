@@ -40,7 +40,7 @@ classifiers = [
 dependencies = ["e2b>=2.46,<3"]
 
 [project.optional-dependencies]
-test = ["pytest>=8"]
+test = ["pytest>=8", "pyyaml>=6"]
 
 [project.urls]
 Homepage = "https://github.com/e2b-dev/hermes-plugin-e2b"

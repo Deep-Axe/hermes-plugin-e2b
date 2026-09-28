@@ -15,6 +15,11 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.11", "3.12", "3.13"]
+        # Hermes gained Python 3.14 in the same change that made it install its
+        # dependencies only on 3.14, so no single revision covers every version.
+        include:
+          - python-version: "3.14"
+            hermes-sha: e824425e8c15b05e0847e818f3860c58290394cc
 
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +36,8 @@ jobs:
       - name: Install Hermes Agent
         id: hermes
         continue-on-error: true
+        env:
+          HERMES_SHA: ${{ matrix.hermes-sha || env.HERMES_SHA }}
         run: |
           git init /tmp/hermes-agent
           git -C /tmp/hermes-agent fetch --depth 1 https://github.com/NousResearch/hermes-agent.git "$HERMES_SHA"

@@ -314,6 +314,7 @@ def test_terminal_dispatch_routes_a_command_into_the_sandbox(hermes_install):
         _FAKE_SDK_PREAMBLE.format(tests_dir=tests_dir)
         + """
 from tools import terminal_tool
+from tools.terminal_tool_lifecycle import get_active_env
 
 payload = terminal_tool.terminal_tool(command="echo hello-from-e2b")
 import json as _json
@@ -324,7 +325,7 @@ result["error"] = data.get("error")
 result["sandboxes_created"] = len(fake.create_calls)
 result["commands"] = [c.cmd for c in fake.only().commands_run]
 result["backend_stamp"] = getattr(
-    terminal_tool.get_active_env("default"), "_hermes_backend_name", None
+    get_active_env("default"), "_hermes_backend_name", None
 )
 """,
         env_extra={"E2B_API_KEY": "e2b_" + "0" * 40},
@@ -358,6 +359,7 @@ def test_ephemeral_delegate_alias_shares_the_parent_sandbox_end_to_end(hermes_in
         _FAKE_SDK_PREAMBLE.format(tests_dir=tests_dir)
         + """
 from tools import terminal_tool
+from tools.terminal_tool_lifecycle import get_active_env
 import json as _json
 
 parent = "session:parent"
@@ -367,11 +369,11 @@ terminal_tool.register_container_alias(child, parent)
 
 parent_result = _json.loads(terminal_tool.terminal_tool(command="echo parent", task_id=parent))
 child_result = _json.loads(terminal_tool.terminal_tool(command="echo child", task_id=child))
-parent_env = terminal_tool.get_active_env(parent)
-child_env = terminal_tool.get_active_env(child)
+parent_env = get_active_env(parent)
+child_env = get_active_env(child)
 
 other_result = _json.loads(terminal_tool.terminal_tool(command="echo other", task_id=other))
-other_env = terminal_tool.get_active_env(other)
+other_env = get_active_env(other)
 
 result["exit_codes"] = [
     parent_result.get("exit_code"),
